@@ -16,15 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CheckCircle
@@ -34,7 +32,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,11 +46,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -82,111 +79,160 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BSEBHubApp() {
 
-    var selectedTab by remember {
-        mutableIntStateOf(0)
+    var screen by remember {
+        mutableStateOf("home")
     }
 
-    Scaffold(
-        containerColor = Background,
-        bottomBar = {
-            BottomNavigationBar(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+    var selectedClass by remember {
+        mutableStateOf("")
+    }
+
+    when (screen) {
+
+        "home" -> {
+            HomeScreen(
+                onClassSelected = {
+                    selectedClass = it
+                    screen = "subjects"
+                }
             )
         }
-    ) { padding ->
 
-        HomeScreen(
-            modifier = Modifier.padding(padding)
-        )
+        "subjects" -> {
+            SubjectScreen(
+                className = selectedClass,
+                onBack = {
+                    screen = "home"
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    onClassSelected: (String) -> Unit
 ) {
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Background)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-    ) {
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        // TOP HEADER
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Column(
-                modifier = Modifier.weight(1f)
+    Scaffold(
+        containerColor = Background,
+        bottomBar = {
+            NavigationBar(
+                containerColor = Color.White
             ) {
-
-                Text(
-                    text = "BSEB",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Navy
+                NavigationBarItem(
+                    selected = true,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Default.Home, null)
+                    },
+                    label = {
+                        Text("Home")
+                    }
                 )
 
-                Text(
-                    text = "HUB",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Blue
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Default.MenuBook, null)
+                    },
+                    label = {
+                        Text("Study")
+                    }
                 )
-            }
 
-            IconButton(
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = Navy
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Default.CheckCircle, null)
+                    },
+                    label = {
+                        Text("Practice")
+                    }
                 )
-            }
 
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(Navy),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    tint = Color.White
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Default.Description, null)
+                    },
+                    label = {
+                        Text("Papers")
+                    }
+                )
+
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {},
+                    icon = {
+                        Icon(Icons.Default.Person, null)
+                    },
+                    label = {
+                        Text("Profile")
+                    }
                 )
             }
         }
+    ) { padding ->
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // WELCOME CARD
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(26.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Navy
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Background)
+                .padding(padding)
+                .padding(horizontal = 16.dp)
         ) {
 
+            Spacer(modifier = Modifier.height(18.dp))
+
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(22.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Column(
                     modifier = Modifier.weight(1f)
+                ) {
+
+                    Text(
+                        text = "BSEB",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Navy
+                    )
+
+                    Text(
+                        text = "HUB",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Blue
+                    )
+                }
+
+                IconButton(onClick = {}) {
+                    Icon(
+                        Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        tint = Navy
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Navy
+                )
+            ) {
+
+                Column(
+                    modifier = Modifier.padding(22.dp)
                 ) {
 
                     Text(
@@ -195,17 +241,16 @@ fun HomeScreen(
                         fontSize = 16.sp
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(7.dp))
 
                     Text(
                         text = "Learn. Practice.\nAchieve. 🎯",
                         color = Color.White,
                         fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 31.sp
+                        fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "Bihar Board preparation made simple.",
@@ -213,262 +258,328 @@ fun HomeScreen(
                         fontSize = 13.sp
                     )
                 }
+            }
 
-                Box(
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF1D4ED8)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MenuBook,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(36.dp)
+            Spacer(modifier = Modifier.height(22.dp))
+
+            Text(
+                text = "🎓 Choose Your Class",
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.height(260.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                items(
+                    listOf(
+                        "10th",
+                        "12th",
+                        "9th",
+                        "11th",
+                        "6th–8th",
+                        "1st–5th"
                     )
+                ) { className ->
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(115.dp),
+                        onClick = {
+                            onClassSelected(className)
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 3.dp
+                        )
+                    ) {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            Text(
+                                text = "CLASS",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Blue
+                            )
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Text(
+                                text = className,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = TextDark
+                            )
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Text(
+                                text = "View Subjects →",
+                                fontSize = 12.sp,
+                                color = TextGray
+                            )
+                        }
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        SectionTitle(
-            title = "Choose Your Class",
-            action = "View All"
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(end = 8.dp)
-        ) {
-
-            item {
-                ClassChip("10th", true)
-            }
-
-            item {
-                ClassChip("12th", false)
-            }
-
-            item {
-                ClassChip("9th", false)
-            }
-
-            item {
-                ClassChip("11th", false)
-            }
-
-            item {
-                ClassChip("6–8", false)
-            }
-
-            item {
-                ClassChip("1–5", false)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        SectionTitle(
-            title = "Quick Study"
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        val quickStudy = listOf(
-            QuickItem("Notes", Icons.Default.Book),
-            QuickItem("VVI", Icons.Default.EmojiEvents),
-            QuickItem("MCQ", Icons.Default.CheckCircle),
-            QuickItem("PYQ", Icons.Default.Description)
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.height(190.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            userScrollEnabled = false
-        ) {
-
-            items(quickStudy) { item ->
-                QuickStudyCard(item)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        // MOCK TEST CARD
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(22.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = LightBlue
+            Text(
+                text = "🔥 Quick Study",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            QuickRow(
+                icon = Icons.Default.Book,
+                title = "Notes",
+                subtitle = "Chapter-wise notes"
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            QuickRow(
+                icon = Icons.Default.EmojiEvents,
+                title = "VVI Questions",
+                subtitle = "Important questions"
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            QuickRow(
+                icon = Icons.Default.Timer,
+                title = "Mock Test",
+                subtitle = "Practice & improve"
+            )
+        }
+    }
+}
+
+@Composable
+fun QuickRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String
+) {
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(17.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .background(
+                        LightBlue,
+                        RoundedCornerShape(14.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = Blue
+                )
+            }
+
+            Spacer(modifier = Modifier.width(13.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+
+                Text(
+                    title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+
+                Text(
+                    subtitle,
+                    fontSize = 12.sp,
+                    color = TextGray
+                )
+            }
+
+            Icon(
+                Icons.Default.ArrowForward,
+                contentDescription = null,
+                tint = TextGray
+            )
+        }
+    }
+}
+
+@Composable
+fun SubjectScreen(
+    className: String,
+    onBack: () -> Unit
+) {
+
+    val subjects = when (className) {
+
+        "10th" -> listOf(
+            "Hindi",
+            "English",
+            "Mathematics",
+            "Science",
+            "Social Science",
+            "Sanskrit"
+        )
+
+        "12th" -> listOf(
+            "Hindi",
+            "English",
+            "Physics",
+            "Chemistry",
+            "Mathematics",
+            "Biology"
+        )
+
+        "9th" -> listOf(
+            "Hindi",
+            "English",
+            "Mathematics",
+            "Science",
+            "Social Science"
+        )
+
+        "11th" -> listOf(
+            "Hindi",
+            "English",
+            "Physics",
+            "Chemistry",
+            "Mathematics",
+            "Biology"
+        )
+
+        else -> listOf(
+            "Hindi",
+            "English",
+            "Mathematics",
+            "Science",
+            "Social Science"
+        )
+    }
+
+    Scaffold(
+        containerColor = Background
+    ) { padding ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Background)
+                .padding(padding)
         ) {
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(18.dp),
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
+                IconButton(
+                    onClick = onBack
                 ) {
-
                     Icon(
-                        imageVector = Icons.Default.Timer,
-                        contentDescription = null,
-                        tint = Blue
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Navy
                     )
                 }
 
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Column {
 
                     Text(
-                        text = "Today's Challenge",
-                        fontSize = 16.sp,
+                        text = className,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextDark
+                        color = Navy
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
                     Text(
-                        text = "20 MCQs • 15 Minutes",
+                        text = "Select Subject",
                         fontSize = 13.sp,
                         color = TextGray
                     )
                 }
+            }
 
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
-                    tint = Blue
-                )
+            Text(
+                text = "📚 Subjects",
+                modifier = Modifier.padding(
+                    start = 18.dp,
+                    top = 12.dp,
+                    bottom = 12.dp
+                ),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
+            )
+
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                items(subjects.size) { index ->
+
+                    SubjectCard(
+                        subject = subjects[index]
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        SectionTitle(
-            title = "Study Material"
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        MaterialRow(
-            icon = Icons.Default.MenuBook,
-            title = "Textbook & Chapter Notes",
-            subtitle = "Read chapter-wise study material"
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        MaterialRow(
-            icon = Icons.Default.Description,
-            title = "Model Papers",
-            subtitle = "Practice with latest model papers"
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        MaterialRow(
-            icon = Icons.Default.EmojiEvents,
-            title = "Previous Year Questions",
-            subtitle = "Prepare with previous board exams"
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
-data class QuickItem(
-    val title: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-)
-
 @Composable
-fun SectionTitle(
-    title: String,
-    action: String? = null
+fun SubjectCard(
+    subject: String
 ) {
 
-    Row(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Text(
-            text = title,
-            modifier = Modifier.weight(1f),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextDark
-        )
-
-        if (action != null) {
-
-            Text(
-                text = action,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Blue
-            )
-        }
-    }
-}
-
-@Composable
-fun ClassChip(
-    text: String,
-    selected: Boolean
-) {
-
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (selected) Blue else Color.White
-        )
-    ) {
-
-        Box(
-            modifier = Modifier
-                .width(72.dp)
-                .height(48.dp),
-            contentAlignment = Alignment.Center
-        ) {
-
-            Text(
-                text = text,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (selected) Color.White else TextDark
-            )
-        }
-    }
-}
-
-@Composable
-fun QuickStudyCard(
-    item: QuickItem
-) {
-
-    Card(
-        modifier = Modifier.fillMaxSize(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -479,185 +590,43 @@ fun QuickStudyCard(
 
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(LightBlue),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = Blue,
-                    modifier = Modifier.size(21.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Text(
-                text = item.title,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
-        }
-    }
-}
-
-@Composable
-fun MaterialRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    subtitle: String
-) {
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
-    ) {
-
-        Row(
-            modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Box(
                 modifier = Modifier
-                    .size(46.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(LightBlue),
+                    .size(50.dp)
+                    .background(
+                        LightBlue,
+                        RoundedCornerShape(15.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
 
                 Icon(
-                    imageVector = icon,
+                    Icons.Default.MenuBook,
                     contentDescription = null,
                     tint = Blue
                 )
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(15.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-
-                Text(
-                    text = title,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextDark
-                )
-
-                Spacer(modifier = Modifier.height(3.dp))
-
-                Text(
-                    text = subtitle,
-                    fontSize = 12.sp,
-                    color = TextGray
-                )
-            }
+            Text(
+                text = subject,
+                modifier = Modifier.weight(1f),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextDark
+            )
 
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                Icons.Default.ArrowForward,
                 contentDescription = null,
                 tint = TextGray
             )
         }
-    }
-}
-
-@Composable
-fun BottomNavigationBar(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit
-) {
-
-    NavigationBar(
-        containerColor = Color.White
-    ) {
-
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = { onTabSelected(0) },
-            icon = {
-                Icon(
-                    Icons.Default.Home,
-                    contentDescription = "Home"
-                )
-            },
-            label = {
-                Text("Home")
-            }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = { onTabSelected(1) },
-            icon = {
-                Icon(
-                    Icons.Default.MenuBook,
-                    contentDescription = "Study"
-                )
-            },
-            label = {
-                Text("Study")
-            }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 2,
-            onClick = { onTabSelected(2) },
-            icon = {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = "Practice"
-                )
-            },
-            label = {
-                Text("Practice")
-            }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 3,
-            onClick = { onTabSelected(3) },
-            icon = {
-                Icon(
-                    Icons.Default.Description,
-                    contentDescription = "Papers"
-                )
-            },
-            label = {
-                Text("Papers")
-            }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 4,
-            onClick = { onTabSelected(4) },
-            icon = {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = "Profile"
-                )
-            },
-            label = {
-                Text("Profile")
-            }
-        )
     }
 }
